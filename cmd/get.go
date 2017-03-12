@@ -36,7 +36,7 @@ var option_O = false
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get the file from GitHub",
-    Long: 'Get the file from GitHub',
+    Long: "Get the file from GitHub",
 	Run: func(cmd *cobra.Command, args []string) {
         var url_part = strings.Split(args[0], "/")
         var url string
