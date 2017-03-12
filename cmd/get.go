@@ -21,7 +21,7 @@
 package cmd
 
 import (
-    "fmt"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -36,55 +36,55 @@ var option_O = false
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get the file from GitHub",
-    Long: 'Get the file from GitHub',
+	Long:  "Get the file from GitHub",
 	Run: func(cmd *cobra.Command, args []string) {
-        var url_part = strings.Split(args[0], "/")
-        var url string
-        const url_head = "https://raw.githubusercontent.com/"
-        switch c := len(url_part); true {
-        case c == 2:
-            if len(args) != 2 {
-                fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
-                os.Exit(1)
-            }
-            url = url_head + args[0] + "/master/" + args[1]
-        case c == 3:
-            if len(args) != 2 {
-                fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
-                os.Exit(1)
-            }
-            url = url_head + args[0] + "/" + args[1]
-        case c > 3:
-            url = url_head + args[0]
-        default:
-            fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
-            os.Exit(1)
-        }
+		var url_part = strings.Split(args[0], "/")
+		var url string
+		const url_head = "https://raw.githubusercontent.com/"
+		switch c := len(url_part); true {
+		case c == 2:
+			if len(args) != 2 {
+				fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
+				os.Exit(1)
+			}
+			url = url_head + args[0] + "/master/" + args[1]
+		case c == 3:
+			if len(args) != 2 {
+				fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
+				os.Exit(1)
+			}
+			url = url_head + args[0] + "/" + args[1]
+		case c > 3:
+			url = url_head + args[0]
+		default:
+			fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
+			os.Exit(1)
+		}
 
-        if option_O {
-            err := exec.Command("curl", url, "-O").Run()
-            if err != nil {
-                fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
-                os.Exit(1)
-            }
-            os.Exit(0)
-        }
+		if option_O {
+			err := exec.Command("curl", url, "-O").Run()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
+				os.Exit(1)
+			}
+			os.Exit(0)
+		}
 
-        if len(option_o) > 0 {
-            err := exec.Command("curl", url, "-o", option_o).Run()
-            if err != nil {
-                fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
-                os.Exit(1)
-            }
-            os.Exit(0)
-        }
+		if len(option_o) > 0 {
+			err := exec.Command("curl", url, "-o", option_o).Run()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
+				os.Exit(1)
+			}
+			os.Exit(0)
+		}
 
-        out, err := exec.Command("curl", url).Output()
-        if err != nil {
-            fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
-            os.Exit(1)
-        }
-        fmt.Println(string(out))
+		out, err := exec.Command("curl", url).Output()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(out))
 	},
 }
 
@@ -100,6 +100,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-    getCmd.Flags().BoolVarP(&option_O, "remote-name", "O", false, "curl -O option")
-    getCmd.Flags().StringVarP(&option_o, "", "o", "", "curl -o option")
+	getCmd.Flags().BoolVarP(&option_O, "remote-name", "O", false, "curl -O option")
+	getCmd.Flags().StringVarP(&option_o, "", "o", "", "curl -o option")
 }
