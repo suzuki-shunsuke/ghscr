@@ -33,9 +33,9 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "ghscr",
 	Short: "Get scripts hosted at GitHub",
-// Uncomment the following line if your bare application
-// has an action associated with it:
-//	Run: func(cmd *cobra.Command, args []string) { },
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
