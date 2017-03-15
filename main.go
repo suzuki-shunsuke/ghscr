@@ -20,8 +20,31 @@
 
 package main
 
-import "github.com/suzuki-shunsuke/ghscr/cmd"
+import (
+	"fmt"
+	"os"
+
+	"github.com/suzuki-shunsuke/ghscr/cmd"
+	"github.com/urfave/cli"
+)
 
 func main() {
-	cmd.Execute()
+	app := cli.NewApp()
+	app.Name = "ghscr"
+	app.Version = "1.0.0"
+	app.Usage = "Get scripts hosted at GitHub"
+	app.Commands = []cli.Command{
+		cmd.GetCommand,
+	}
+	// https://github.com/urfave/cli/issues/293#issuecomment-152357745
+	app.CommandNotFound = func(c *cli.Context, command string) {
+		fmt.Fprintf(os.Stderr, `
+No matching command '%s'
+Show Help
+
+`, command)
+		cli.ShowAppHelp(c)
+		os.Exit(1)
+	}
+	app.Run(os.Args)
 }
