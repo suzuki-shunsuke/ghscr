@@ -26,42 +26,54 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli"
 )
 
-var option_o = ""
-var option_O = false
+const Description = `
+  Args:
+  
+    <user>/<repo>[/<branch or tag or revision>] <path> [-o <path>] [-O]
+    <user>/<repo>/<branch or tag or revision>/<path> [-o <path>] [-O]
+  
+    user     - GitHub repository's user name
+    repo     - GitHub repository's repository name
+    branch   - GitHub repository's branch name
+    tag      - GitHub repository's tag name
+    revision - GitHub repository's revision
+    path     - Relative path from repository's root directory to the target file
+`
 
-// getCmd represents the get command
-var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Get the file from GitHub",
-	Long:  "Get the file from GitHub",
-	Run: func(cmd *cobra.Command, args []string) {
-		var url_part = strings.Split(args[0], "/")
+var GetCommand = cli.Command{
+	Name:        "get",
+	Usage:       "Get the file from GitHub",
+	Description: Description,
+	Action: func(c *cli.Context) error {
+		arg0 := c.Args().Get(0)
+		url_part := strings.Split(arg0, "/")
 		var url string
 		const url_head = "https://raw.githubusercontent.com/"
-		switch c := len(url_part); true {
-		case c == 2:
-			if len(args) != 2 {
+		L := c.NArg()
+		switch n := len(url_part); true {
+		case n == 2:
+			if L != 2 {
 				fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
 				os.Exit(1)
 			}
-			url = url_head + args[0] + "/master/" + args[1]
-		case c == 3:
-			if len(args) != 2 {
+			url = url_head + arg0 + "/master/" + c.Args().Get(1)
+		case n == 3:
+			if L != 2 {
 				fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
 				os.Exit(1)
 			}
-			url = url_head + args[0] + "/" + args[1]
-		case c > 3:
-			url = url_head + args[0]
+			url = url_head + arg0 + "/" + c.Args().Get(1)
+		case n > 3:
+			url = url_head + arg0
 		default:
 			fmt.Fprint(os.Stderr, "[ghscr][Error] invalid arguments\n")
 			os.Exit(1)
 		}
 
-		if option_O {
+		if c.Bool("O") {
 			err := exec.Command("curl", url, "-O").Run()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
@@ -70,8 +82,8 @@ var getCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		if len(option_o) > 0 {
-			err := exec.Command("curl", url, "-o", option_o).Run()
+		if len(c.String("o")) > 0 {
+			err := exec.Command("curl", url, "-o", c.String("o")).Run()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "[ghscr][Error] %s\n", err)
 				os.Exit(1)
@@ -85,21 +97,17 @@ var getCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		fmt.Println(string(out))
+		return nil
 	},
-}
-
-func init() {
-	RootCmd.AddCommand(getCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	getCmd.Flags().BoolVarP(&option_O, "remote-name", "O", false, "curl -O option")
-	getCmd.Flags().StringVarP(&option_o, "", "o", "", "curl -o option")
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "O",
+			Usage: "curl's -O option",
+		},
+		cli.StringFlag{
+			Name:  "o",
+			Value: "",
+			Usage: "curl's -o option",
+		},
+	},
 }
