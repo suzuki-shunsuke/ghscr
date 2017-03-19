@@ -26,8 +26,7 @@ $ ghscr get <user>/<repo>/<branch or tag or revision>/<path> [-o <path>] [-O]
 2. Create a feature branch
 3. Commit your changes
 4. Rebase your local changes against the master branch
-5. Run test suite with the `npm test` command and confirm that it passes
-6. Create a new Pull Request
+5. Create a new Pull Request
 
 ## License
 
